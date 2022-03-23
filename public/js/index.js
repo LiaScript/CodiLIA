@@ -73,6 +73,8 @@ import getUIElements from './lib/editor/ui-elements'
 import { emojifyImageDir } from './lib/editor/constants'
 import modeType from './lib/modeType'
 import appState from './lib/appState'
+import { initialize } from 'passport'
+import { param } from 'jquery'
 
 require('../vendor/showup/showup')
 
@@ -298,25 +300,40 @@ window.lia = document.getElementById("lia");
 
 let liaReady = false
 
-window.liaReady = function() {
-  
-  liaReady = true
+function initializePreview(content) {
+  if (window.lia.contentWindow.LIA && window.lia.contentWindow.LIA.jit) {
+    window.lia.contentWindow.LIA.focusOnMain = false
+    window.lia.contentWindow.LIA.scrollUpOnMain = false
 
-  var value = editor.getValue()
-
-  console.log("LiaScript is ready")
-
-  if (value.trim() == "") {
-    console.warn("Empty Document, generating help")
-    //window.lia.contentWindow.location.reload(true)
-    window.lia.contentWindow.jitLia("# LiaScript\n")
-    window.lia.contentWindow.jitLia(" ")
+    if (!content) {
+      console.warn("Empty Document, generating help")
+    
+      window.lia.contentWindow.LIA.jit("# LiaScript\n")
+      window.lia.contentWindow.LIA.jit(" ")
+    } else {
+      updateViewInner()
+    }
   } else {
-    updateViewInner()
+    setTimeout(function () {
+      initializePreview(content)
+    }, 123)
   }
 }
 
-window.lia.contentWindow.liaGoto = function(line) {
+window.liaReady = function (params) {
+  if (!liaReady) {
+    console.warn(params)
+    liaReady = true
+
+    var value = editor.getValue()
+
+    console.log("LiaScript is ready")
+
+    initializePreview(value.trim())
+  }
+}
+
+window.lia.contentWindow.LIA.lineGoto = function(line) {
   editor.setCursor({line: line, ch: 0})
   editor.focus()
 }
@@ -326,7 +343,7 @@ window.liaDefinitions = function (json) {
 }
 
 window.editor.on('dblclick', function(e) {
-   window.lia.contentWindow.gotoLia(e.getCursor().line + 1)
+   window.lia.contentWindow.LIA.gotoLine(e.getCursor().line + 1)
 })
 
 var inlineAttach = inlineAttachment.editors.codemirror4.attach(editor)
@@ -2731,7 +2748,7 @@ var postUpdateEvent = null
 
 var initView = function(value) {
   try {
-    window.lia.contentWindow.jitLia(value)
+    window.lia.contentWindow.LIA.jit(value)
   } catch(e) {
     setTimeout( function() { initView(value) }, 500 )
   }
@@ -2745,7 +2762,7 @@ function updateViewInner () {
   //delete md.metaError
 
   try {
-    window.lia.contentWindow.jitLia(value)
+    window.lia.contentWindow.LIA.jit(value)
   } catch(e) {
     initView(value)
   }
