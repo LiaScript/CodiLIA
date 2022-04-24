@@ -21,6 +21,7 @@ import Idle from '@hackmd/idle-js'
 import { Spinner } from 'spin.js'
 
 import { liaSnippets } from './liaHelp'
+import { liaTutorial } from './tutorial'
 
 import {
   checkLoginStateChanged,
@@ -325,11 +326,21 @@ window.liaReady = function (params) {
     console.warn(params)
     liaReady = true
 
-    var value = editor.getValue()
+    var value = editor.getValue().trim()
 
     console.log("LiaScript is ready")
 
-    initializePreview(value.trim())
+    console.warn("XXX", value)
+
+    if (!value) {
+      editor.setValue(liaTutorial)
+      initializePreview(liaTutorial)
+
+      console.warn("XXXXX", value)
+    } else {
+      initializePreview(value)
+    }
+
   }
 }
 
