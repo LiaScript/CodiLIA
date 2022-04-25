@@ -317,7 +317,7 @@ function initializePreview(content) {
   } else {
     setTimeout(function () {
       initializePreview(content)
-    }, 123)
+    }, 333)
   }
 }
 
