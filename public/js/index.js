@@ -330,17 +330,12 @@ window.liaReady = function (params) {
 
     console.log("LiaScript is ready")
 
-    console.warn("XXX", value)
-
     if (!value) {
       editor.setValue(liaTutorial)
       initializePreview(liaTutorial)
-
-      console.warn("XXXXX", value)
     } else {
       initializePreview(value)
     }
-
   }
 }
 
